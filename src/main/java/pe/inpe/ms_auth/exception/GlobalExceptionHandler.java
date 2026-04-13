@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pe.inpe.ms_core.dto.ErrorMessageDTO;
-import pe.inpe.ms_core.dto.GenericResponseDTO;
+import pe.inpe.ms_auth.dto.ErrorMessageDTO;
+import pe.inpe.ms_auth.dto.GenericResponseDTO;
 
 import java.time.LocalDateTime;
 

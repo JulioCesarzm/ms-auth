@@ -48,7 +48,6 @@ public class AuthController {
             UsuarioJwtDTO usuarioJwt = UsuarioJwtDTO.builder()
                     .idUsuario(usuario.getIdUsuario())
                     .username(usuario.getUsername())
-                    .email(usuario.getEmail())
                     .rol(usuario.getRol().getNombre())
                     .token(token)
                     .expiresIn(jwtService.getExpirationTime())
@@ -83,25 +82,22 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<GenericResponseDTO<UsuarioJwtDTO>> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<GenericResponseDTO<MeResponseDTO>> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
         var claims = jwtService.getClaims(token);
-        UsuarioJwtDTO usuarioJwt = UsuarioJwtDTO.builder()
+        MeResponseDTO usuarioJwt = MeResponseDTO.builder()
                 .idUsuario(claims.get("userId", Long.class))
                 .username(claims.getSubject())
-                .email(claims.get("email", String.class))
                 .build();
-        return ResponseEntity.ok(GenericResponseDTO.<UsuarioJwtDTO>builder().response(usuarioJwt).build());
+        return ResponseEntity.ok(GenericResponseDTO.<MeResponseDTO>builder().response(usuarioJwt).build());
     }
 
     @GetMapping("/roles")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GenericResponseDTO<List<?>>> listarRoles() {
         return ResponseEntity.ok(GenericResponseDTO.<List<?>>builder().response(rolService.listarTodos()).build());
     }
 
     @PostMapping("/usuarios")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GenericResponseDTO<UsuarioResponseDTO>> crearUsuario(@Valid @RequestBody UsuarioRequestDTO request) {
         UsuarioResponseDTO response = usuarioService.crearUsuario(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -109,21 +105,18 @@ public class AuthController {
     }
 
     @GetMapping("/usuarios")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GenericResponseDTO<List<UsuarioResponseDTO>>> listarUsuarios() {
         List<UsuarioResponseDTO> response = usuarioService.listarTodos();
         return ResponseEntity.ok(GenericResponseDTO.<List<UsuarioResponseDTO>>builder().response(response).build());
     }
 
     @GetMapping("/usuarios/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     public ResponseEntity<GenericResponseDTO<UsuarioResponseDTO>> obtenerUsuario(@PathVariable Long id) {
         UsuarioResponseDTO response = usuarioService.obtenerPorId(id);
         return ResponseEntity.ok(GenericResponseDTO.<UsuarioResponseDTO>builder().response(response).build());
     }
 
     @PutMapping("/usuarios/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GenericResponseDTO<UsuarioResponseDTO>> actualizarUsuario(
             @PathVariable Long id,
             @Valid @RequestBody UsuarioUpdateRequestDTO request) {
@@ -132,7 +125,6 @@ public class AuthController {
     }
 
     @PatchMapping("/usuarios/{id}/estado")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GenericResponseDTO<Void>> cambiarEstado(
             @PathVariable Long id,
             @RequestParam Boolean estado) {
@@ -141,7 +133,6 @@ public class AuthController {
     }
 
     @PatchMapping("/usuarios/{id}/password")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.idUsuario")
     public ResponseEntity<GenericResponseDTO<Void>> cambiarPassword(
             @PathVariable Long id,
             @Valid @RequestBody CambioPasswordRequestDTO request) {

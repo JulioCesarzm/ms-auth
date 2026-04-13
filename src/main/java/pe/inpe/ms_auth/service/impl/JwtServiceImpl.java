@@ -45,7 +45,6 @@ public class JwtServiceImpl implements IJwtService {
                         .map(GrantedAuthority::getAuthority)
                         .toList())
                 .claim("userId", user.getIdUsuario())
-                .claim("email", user.getEmail())
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSignKey())

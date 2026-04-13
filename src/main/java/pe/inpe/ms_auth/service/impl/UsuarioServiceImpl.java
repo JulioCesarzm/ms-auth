@@ -68,9 +68,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
         if (usuarioRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("El username ya está en uso: " + request.getUsername());
         }
-        if (request.getEmail() != null && usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("El email ya está en uso: " + request.getEmail());
-        }
 
         RolSistema rol = rolRepository.findById(request.getIdRol())
                 .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado con ID: " + request.getIdRol()));
@@ -78,7 +75,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        usuario.setEmail(request.getEmail());
         usuario.setRol(rol);
         usuario.setIdPersona(request.getIdPersona());
         usuario.setEstado(true);
@@ -96,10 +92,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
-
-        if (request.getEmail() != null) {
-            usuario.setEmail(request.getEmail());
-        }
 
         if (request.getIdRol() != null) {
             RolSistema rol = rolRepository.findById(request.getIdRol())

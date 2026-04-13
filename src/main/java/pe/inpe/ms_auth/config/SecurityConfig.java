@@ -30,8 +30,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Publicas
                         .requestMatchers("/api/v1/auth/login", "/api/v1/auth/validate").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+
+                        // admins
+                        .requestMatchers("/api/v1/auth/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/auth/roles/**").hasRole("ADMIN")
+
+                        // cualquier chambeador
+                        .requestMatchers("/api/v1/auth/me").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filterJwtAuth, UsernamePasswordAuthenticationFilter.class)

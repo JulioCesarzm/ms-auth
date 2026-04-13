@@ -36,9 +36,6 @@ public class Usuario extends AuditModel implements UserDetails {
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(name = "email")
-    private String email;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_rol")
     private RolSistema rol;
